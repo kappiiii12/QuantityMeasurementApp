@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.quantitymeasurementapp.app.QuantityMeasurementApp.Feet;
+import com.quantitymeasurementapp.app.QuantityMeasurementApp.Inches;
 
 /**
  * Unit test for simple App.
@@ -75,4 +76,66 @@ public class QuantityMeasurementAppTest {
 	        Feet f2 = new Feet(0.0);
 	        assertTrue(f1.equals(f2));
 	    }
-}
+	     //**********************UC2 INCHES TEST CASES**********************************
+	    
+	    @Test
+	    void givenSameInchValue_shouldReturnTrue() {
+	        Inches i1 = new Inches(5.0);
+	        Inches i2 = new Inches(5.0);
+	        assertTrue(i1.equals(i2));
+	    }
+
+	    @Test
+	    void givenDifferentInchValues_shouldReturnFalse() {
+	        Inches i1 = new Inches(5.0);
+	        Inches i2 = new Inches(7.0);
+	        assertFalse(i1.equals(i2));
+	    }
+
+	    @Test
+	    void givenSameInchReference_shouldReturnTrue() {
+	        Inches i1 = new Inches(10.0);
+	        assertTrue(i1.equals(i1));
+	    }
+
+	    @Test
+	    void givenInchAndNull_shouldReturnFalse() {
+	        Inches i1 = new Inches(10.0);
+	        assertFalse(i1.equals(null));
+	    }
+
+	    @Test
+	    void givenInchAndDifferentType_shouldReturnFalse() {
+	        Inches i1 = new Inches(10.0);
+	        assertFalse(i1.equals(10.0));
+	    }
+
+	    @Test
+	    void givenTwoDifferentInchObjectsWithSameValue_shouldReturnTrue() {
+	        Inches i1 = new Inches(8.0);
+	        Inches i2 = new Inches(8.0);
+	        assertTrue(i1.equals(i2));
+	    }
+
+	    @Test
+	    void givenDecimalInchValues_shouldReturnTrue() {
+	        Inches i1 = new Inches(2.25);
+	        Inches i2 = new Inches(2.25);
+	        assertTrue(i1.equals(i2));
+	    }
+
+	    @Test
+	    void givenNegativeInchValues_shouldReturnTrue() {
+	        Inches i1 = new Inches(-4.0);
+	        Inches i2 = new Inches(-4.0);
+	        assertTrue(i1.equals(i2));
+	    }
+
+	    @Test
+	    void givenZeroInchValues_shouldReturnTrue() {
+	        Inches i1 = new Inches(0.0);
+	        Inches i2 = new Inches(0.0);
+	        assertTrue(i1.equals(i2));
+	    }
+	}
+
