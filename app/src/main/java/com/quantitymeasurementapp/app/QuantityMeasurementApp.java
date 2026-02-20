@@ -13,6 +13,11 @@ public class QuantityMeasurementApp {
 		}
 		@Override
 		public boolean equals(Object o) {
+			if(o == null)
+		    return false;
+			
+			if (this.getClass() != o.getClass()) return false;
+			
 			Feet feet = (Feet) o;
 			
 			return Double.compare(this.value , feet.value) == 0;
