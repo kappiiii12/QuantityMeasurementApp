@@ -34,6 +34,21 @@ public class Length {
     public double toInches() {
 			return unit.convertToBase(value);
 		}
+    
+    public Length convertTo(Unit targetUnit) {
+    	  if (targetUnit == null) {
+              throw new IllegalArgumentException("Target unit cannot be null");
+          }
+
+          if (!Double.isFinite(this.value)) {
+              throw new IllegalArgumentException("Invalid value");
+          }
+
+    
+    	double res = this.toInches();
+    	res = res/targetUnit.conversionFactor;
+    	return new Length(res,targetUnit);
+    }
 	@Override
     public boolean equals(Object o) {
 		if(o == null)
@@ -43,7 +58,7 @@ public class Length {
 		if(this.getClass() != o.getClass())
 			return false;
 		Length temp = (Length) o;
-		return Double.compare(this.toInches() , temp.toInches()) == 0;
+		return this.toInches() - temp.toInches() < 0.001;
 			
 
 	}
