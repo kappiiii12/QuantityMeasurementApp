@@ -8,12 +8,17 @@ public class Length {
 	
 	public Length(double value, Unit unit) {
 	super();
+	 if (unit == null) {
+         throw new IllegalArgumentException("Unit cannot be null");
+     }
 	this.value = value;
 	this.unit = unit;
 }
 	public enum Unit{
 		FEET(12),
-		INCHES(1);
+		INCHES(1),
+		YARDS(36),
+		CENTIMETERS(0.393701);
 		
 		private final double conversionFactor;
 		 
@@ -47,5 +52,8 @@ public class Length {
 		return Objects.hash(toInches());
 	}
 	
-
+  @Override
+  public String toString() {
+	  return value+" "+unit;
+  }
 }
