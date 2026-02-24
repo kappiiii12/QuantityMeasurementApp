@@ -50,40 +50,55 @@ public class QuantityMeasurementApp {
     		throw new NullPointerException("length cannot be null");
     	return length1.add(length2);
     }
+    public static Length demonstrateLengthAddition(Length length1, Length length2, Length.Unit toUnit) {
+    	if(length1 == null || length2 == null)
+    		throw new NullPointerException("Length Cannot be Null");
+    	return length1.add(length2,toUnit);
+    	
+    }
     public static void main(String[] args) {
     	// 1. FEET + INCHES -> FEET
-        Length l1 = new Length(1.0, Length.Unit.FEET);
-        Length l2 = new Length(12.0, Length.Unit.INCHES);
-        System.out.println("Result 1: " + l1.add(l2)); // Output: 2.0 FEET
+        Length q1 = new Length(1.0, Length.Unit.FEET);
+        Length q2 = new Length(12.0, Length.Unit.INCHES);
+        System.out.println(q1.add(q2, Length.Unit.FEET)); 
+        // Output: Quantity(2.000, FEET)
 
-        // 2. INCHES + FEET -> INCHES
-        Length l3 = new Length(12.0, Length.Unit.INCHES);
-        Length l4 = new Length(1.0, Length.Unit.FEET);
-        System.out.println("Result 2: " + l3.add(l4)); // Output: 24.0 INCHES
+        // 2. FEET + INCHES -> INCHES
+        System.out.println(q1.add(q2, Length.Unit.INCHES)); 
+        // Output: Quantity(24.000, INCHES)
 
-        // 3. YARDS + FEET -> YARDS
-        Length l5 = new Length(1.0, Length.Unit.YARDS);
-        Length l6 = new Length(3.0, Length.Unit.FEET);
-        System.out.println("Result 3: " + l5.add(l6)); // Output: 2.0 YARDS
+        // 3. FEET + INCHES -> YARDS
+        System.out.println(q1.add(q2, Length.Unit.YARDS)); 
+        // Output: Quantity(0.667, YARDS)
 
-        // 4. INCHES + YARDS -> INCHES
-        Length l7 = new Length(36.0, Length.Unit.INCHES);
-        Length l8 = new Length(1.0, Length.Unit.YARDS);
-        System.out.println("Result 4: " + l7.add(l8)); // Output: 72.0 INCHES
+        // 4. YARDS + FEET -> YARDS
+        Length q3 = new Length(1.0, Length.Unit.YARDS);
+        Length q4 = new Length(3.0, Length.Unit.FEET);
+        System.out.println(q3.add(q4, Length.Unit.YARDS)); 
+        // Output: Quantity(2.000, YARDS)
 
-        // 5. CENTIMETERS + INCHES -> CENTIMETERS
-        Length l9 = new Length(2.54, Length.Unit.CENTIMETERS);
-        Length l10 = new Length(1.0, Length.Unit.INCHES);
-        System.out.println("Result 5: " + l9.add(l10)); // Output: ~5.08 CENTIMETERS
+        // 5. INCHES + YARDS -> FEET
+        Length q5 = new Length(36.0, Length.Unit.INCHES);
+        Length q6 = new Length(1.0, Length.Unit.YARDS);
+        System.out.println(q5.add(q6, Length.Unit.FEET)); 
+        // Output: Quantity(6.000, FEET)
 
-        // 6. Handling 0.0 value
-        Length l11 = new Length(5.0, Length.Unit.FEET);
-        Length l12 = new Length(0.0, Length.Unit.INCHES);
-        System.out.println("Result 6: " + l11.add(l12)); // Output: 5.0 FEET
+        // 6. CM + INCHES -> CM
+        Length q7 = new Length(2.54, Length.Unit.CENTIMETERS);
+        Length q8 = new Length(1.0, Length.Unit.INCHES);
+        System.out.println(q7.add(q8, Length.Unit.CENTIMETERS)); 
+        // Output: Quantity(5.080, CENTIMETERS)
 
-        // 7. Handling negative value (Subtraction)
-        Length l13 = new Length(5.0, Length.Unit.FEET);
-        Length l14 = new Length(-2.0, Length.Unit.FEET);
-        System.out.println("Result 7: " + l13.add(l14)); // Output: 3.0 FEET
+        // 7. FEET + 0 INCHES -> YARDS
+        Length q9 = new Length(5.0, Length.Unit.FEET);
+        Length q10 = new Length(0.0, Length.Unit.INCHES);
+        System.out.println(q9.add(q10, Length.Unit.YARDS)); 
+        // Output: Quantity(1.667, YARDS)
+
+        // 8. FEET + NEGATIVE FEET -> INCHES
+        Length q11 = new Length(5.0, Length.Unit.FEET);
+        Length q12 = new Length(-2.0, Length.Unit.FEET);
+        System.out.println(q11.add(q12, Length.Unit.INCHES)); 
+        // Output: Quantity(36.000, INCHES)
     }
 }

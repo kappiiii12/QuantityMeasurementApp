@@ -58,6 +58,14 @@ public class Length {
     	double value = this.value + length.value;
     	return new Length(value,this.unit);
     }
+    
+    public Length add(Length length,Unit unit) {
+    	if(length == null)
+    		throw new NullPointerException("Length cannot Null") ;
+    	length = length.convertTo(this.unit);
+    	double temp = this.value + length.value;
+    	return new Length(temp,this.unit).convertTo(unit);
+    }
 	@Override
     public boolean equals(Object o) {
 		if(o == null)
