@@ -49,6 +49,15 @@ public class Length {
     	res = res/targetUnit.conversionFactor;
     	return new Length(res,targetUnit);
     }
+    
+    public Length add(Length length) {
+    	if(length == null)
+    		throw new NullPointerException("Length cannot Null") ;
+    	
+    	length = length.convertTo(this.unit);
+    	double value = this.value + length.value;
+    	return new Length(value,this.unit);
+    }
 	@Override
     public boolean equals(Object o) {
 		if(o == null)
@@ -71,4 +80,13 @@ public class Length {
   public String toString() {
 	  return value+" "+unit;
   }
+
+  public double getValue() {
+	return value;
+  }
+
+  public Unit getUnit() {
+	return unit;
+  }
+  
 }
