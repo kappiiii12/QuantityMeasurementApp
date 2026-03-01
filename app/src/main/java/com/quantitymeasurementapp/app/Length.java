@@ -4,9 +4,9 @@ import java.util.Objects;
 
 public class Length {
   private final double value;
-  private final Unit unit;
+  private final LengthUnit unit;
 	
-	public Length(double value, Unit unit) {
+	public Length(double value, LengthUnit unit) {
 	super();
 	 if (unit == null) {
          throw new IllegalArgumentException("Unit cannot be null");
@@ -14,28 +14,13 @@ public class Length {
 	this.value = value;
 	this.unit = unit;
 }
-	public enum Unit{
-		FEET(12),
-		INCHES(1),
-		YARDS(36),
-		CENTIMETERS(0.393701);
+	
 		
-		private final double conversionFactor;
-		 
-		Unit(double conversionFactor) {
-			this.conversionFactor = conversionFactor;
-		}
-		
-		public double convertToBase(double value) {
-		return value * conversionFactor;
-		}
-	}	
-		
-    public double toInches() {
+    public double convertToBaseUnit() {
 			return unit.convertToBase(value);
 		}
     
-    public Length convertTo(Unit targetUnit) {
+    public Length convertTo(LengthUnit targetUnit) {
     	  if (targetUnit == null) {
               throw new IllegalArgumentException("Target unit cannot be null");
           }
@@ -45,8 +30,8 @@ public class Length {
           }
 
     
-    	double res = this.toInches();
-    	res = res/targetUnit.conversionFactor;
+    	double res = this.convertToBaseUnit();
+    	res = res/targetUnit.getConversionFactor();
     	return new Length(res,targetUnit);
     }
     
@@ -59,7 +44,7 @@ public class Length {
     	return new Length(value,this.unit);
     }
     
-    public Length add(Length length,Unit unit) {
+    public Length add(Length length,LengthUnit unit) {
     	if(length == null)
     		throw new NullPointerException("Length cannot Null") ;
     	length = length.convertTo(this.unit);
@@ -75,13 +60,13 @@ public class Length {
 		if(this.getClass() != o.getClass())
 			return false;
 		Length temp = (Length) o;
-		return this.toInches() - temp.toInches() < 0.001;
+		return this.convertToBaseUnit() - temp.convertToBaseUnit() < 0.001;
 			
 
 	}
 	@Override
     public int hashCode() {
-		return Objects.hash(toInches());
+		return Objects.hash(convertToBaseUnit());
 	}
 	
   @Override
@@ -93,7 +78,7 @@ public class Length {
 	return value;
   }
 
-  public Unit getUnit() {
+  public LengthUnit getUnit() {
 	return unit;
   }
   
