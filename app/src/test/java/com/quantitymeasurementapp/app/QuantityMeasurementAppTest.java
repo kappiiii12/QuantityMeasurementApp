@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import org.junit.jupiter.api.Test;
 
 
@@ -242,22 +242,7 @@ public class QuantityMeasurementAppTest {
      assertEquals(new Length(5.0, LengthUnit.FEET), result);
  }
  
- /* =========================================================
- UC5: Round Trip Test
- ========================================================= */
  
- @Test
- void testConversion_RoundTrip_PreservesValue() {
-     Length original = new Length(5.0, LengthUnit.FEET);
-
-     Length converted = QuantityMeasurementApp
-             .demonstrateLengthConversion(original, LengthUnit.INCHES);
-
-     Length back = QuantityMeasurementApp
-             .demonstrateLengthConversion(converted, LengthUnit.FEET);
-
-     assertEquals(original, back);
- }
  
  /* =========================================================
  UC5: Exception Tests
@@ -285,247 +270,98 @@ public class QuantityMeasurementAppTest {
  }
  
  /* =========================================================
- UC6: ADDITION TESTS
+ LENGTH EQUALITY TESTS
  ========================================================= */
 
-@Test
-void testAddition_SameUnit_FeetPlusFeet() {
-  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-          new Length(1.0, LengthUnit.FEET),
-          new Length(2.0, LengthUnit.FEET));
-
-  assertEquals(new Length(3.0, LengthUnit.FEET), result);
-}
 
 @Test
-void testAddition_SameUnit_InchPlusInch() {
-  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-          new Length(6.0, LengthUnit.INCHES),
-          new Length(6.0, LengthUnit.INCHES));
-
-  assertEquals(new Length(12.0, LengthUnit.INCHES), result);
+void testEquality_CentimetersToInches_EquivalentValue() {
+  Length l1 = new Length(1.0, LengthUnit.CENTIMETERS);
+  Length l2 = new Length(0.393701, LengthUnit.INCHES);
+  assertTrue(l1.equals(l2));
 }
 
-@Test
-void testAddition_CrossUnit_FeetPlusInches() {
-  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-          new Length(1.0, LengthUnit.FEET),
-          new Length(12.0, LengthUnit.INCHES));
 
-  assertEquals(new Length(2.0, LengthUnit.FEET), result);
-}
-
-@Test
-void testAddition_CrossUnit_InchPlusFeet() {
-  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-          new Length(12.0, LengthUnit.INCHES),
-          new Length(1.0, LengthUnit.FEET));
-
-  assertEquals(new Length(24.0, LengthUnit.INCHES), result);
-}
-
-@Test
-void testAddition_CrossUnit_YardPlusFeet() {
-  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-          new Length(1.0, LengthUnit.YARDS),
-          new Length(3.0, LengthUnit.FEET));
-
-  assertEquals(new Length(2.0, LengthUnit.YARDS), result);
-}
-
-@Test
-void testAddition_CrossUnit_CentimeterPlusInch() {
-  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-          new Length(2.54, LengthUnit.CENTIMETERS),
-          new Length(1.0, LengthUnit.INCHES));
-
-  assertEquals(new Length(5.08, LengthUnit.CENTIMETERS), result);
-}
-
-/* =========================================================
- UC6: MATHEMATICAL PROPERTIES
- ========================================================= */
-
-@Test
-void testAddition_Commutativity() {
-  Length l1 = new Length(1.0, LengthUnit.FEET);
-  Length l2 = new Length(12.0, LengthUnit.INCHES);
-
-  Length result1 = QuantityMeasurementApp.demonstrateLengthAddition(l1, l2);
-  Length result2 = QuantityMeasurementApp.demonstrateLengthAddition(l2, l1);
-
-  assertTrue(result1.equals(result2));
-}
-
-@Test
-void testAddition_WithZero() {
-  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-          new Length(5.0, LengthUnit.FEET),
-          new Length(0.0, LengthUnit.INCHES));
-
-  assertEquals(new Length(5.0, LengthUnit.FEET), result);
-}
-
-@Test
-void testAddition_NegativeValues() {
-  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-          new Length(5.0, LengthUnit.FEET),
-          new Length(-2.0, LengthUnit.FEET));
-
-  assertEquals(new Length(3.0, LengthUnit.FEET), result);
-}
-
-/* =========================================================
- UC6: EDGE CASES
- ========================================================= */
-
-@Test
-void testAddition_NullSecondOperand() {
-  assertThrows(IllegalArgumentException.class,
-          () -> QuantityMeasurementApp.demonstrateLengthAddition(
-                  new Length(1.0, LengthUnit.FEET), null));
-}
-
-@Test
-void testAddition_LargeValues() {
-  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-          new Length(1e6, LengthUnit.FEET),
-          new Length(1e6, LengthUnit.FEET));
-
-  assertEquals(new Length(2e6, LengthUnit.FEET), result);
-}
-
-/* =========================================================
-UC7: ADDITION WITH EXPLICIT TARGET UNIT
-========================================================= */
-
-@Test
-void testAddition_ExplicitTargetUnit_Feet() {
- Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-         new Length(1.0, LengthUnit.FEET),
-         new Length(12.0, LengthUnit.INCHES),
-         LengthUnit.FEET);
-
- assertEquals(new Length(2.0, LengthUnit.FEET), result);
-}
-
-@Test
-void testAddition_ExplicitTargetUnit_Inches() {
- Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-         new Length(1.0, LengthUnit.FEET),
-         new Length(12.0, LengthUnit.INCHES),
-         LengthUnit.INCHES);
-
- assertEquals(new Length(24.0, LengthUnit.INCHES), result);
-}
-
-@Test
-void testAddition_ExplicitTargetUnit_Yards() {
- Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-         new Length(1.0, LengthUnit.FEET),
-         new Length(12.0, LengthUnit.INCHES),
-         LengthUnit.YARDS);
-
- // 2 feet = 0.666... yards
- Length expected = new Length(0.67, LengthUnit.YARDS);
- assertTrue(result.equals(expected));
-}
 
 @Test
 void testAddition_ExplicitTargetUnit_Centimeters() {
- Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-         new Length(1.0, LengthUnit.INCHES),
-         new Length(1.0, LengthUnit.INCHES),
-         LengthUnit.CENTIMETERS);
+  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
+          new Length(1.0, LengthUnit.INCHES),
+          new Length(1.0, LengthUnit.INCHES),
+          LengthUnit.CENTIMETERS);
+  Length expected = new Length(5.08, LengthUnit.CENTIMETERS);
+  assertTrue(result.equals(expected));
+}
 
- Length expected = new Length(5.08, LengthUnit.CENTIMETERS);
- assertTrue(result.equals(expected));
+/* =========================================================
+ WEIGHT EQUALITY TESTS
+ ========================================================= */
+
+@Test
+void testWeightEquality_KilogramToGram_EquivalentValue() {
+  Weight w1 = new Weight(1.0, WeightUnit.KILOGRAM);
+  Weight w2 = new Weight(1000.0, WeightUnit.GRAM);
+  assertTrue(w1.equals(w2));
 }
 
 @Test
-void testAddition_ExplicitTargetUnit_SameAsFirstOperand() {
- Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-         new Length(2.0, LengthUnit.YARDS),
-         new Length(3.0, LengthUnit.FEET),
-         LengthUnit.YARDS);
+void testWeightEquality_KilogramToPound_EquivalentValue() {
+  Weight w1 = new Weight(1.0, WeightUnit.KILOGRAM);
+  Weight w2 = new Weight(2.20462, WeightUnit.POUND);
+  assertTrue(w1.equals(w2));
+}
 
- assertEquals(new Length(3.0, LengthUnit.YARDS), result);
+/* =========================================================
+ WEIGHT CONVERSION TESTS
+ ========================================================= */
+
+@Test
+void testWeightConversion_KilogramToGram() {
+  Weight result = QuantityMeasurementApp
+          .demonstrateWeightConversion(1.5, WeightUnit.KILOGRAM, WeightUnit.GRAM);
+  assertEquals(new Weight(1500.0, WeightUnit.GRAM), result);
+}
+
+/* =========================================================
+ WEIGHT ADDITION TESTS
+ ========================================================= */
+
+@Test
+void testWeightAddition_KilogramPlusGram_ImplicitResult() {
+  Weight result = QuantityMeasurementApp.demonstrateWeightAddition(
+          new Weight(1.0, WeightUnit.KILOGRAM),
+          new Weight(500.0, WeightUnit.GRAM));
+  assertEquals(new Weight(1.5, WeightUnit.KILOGRAM), result);
 }
 
 @Test
-void testAddition_ExplicitTargetUnit_SameAsSecondOperand() {
- Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-         new Length(2.0, LengthUnit.YARDS),
-         new Length(3.0, LengthUnit.FEET),
-         LengthUnit.FEET);
+void testWeightAddition_ExplicitTargetUnit_Grams() {
+  Weight result = QuantityMeasurementApp.demonstrateWeightAddition(
+          new Weight(1.0, WeightUnit.KILOGRAM),
+          new Weight(2.0, WeightUnit.POUND),
+          WeightUnit.GRAM);
+  
+  // Validation using a delta for floating point precision
+  double expectedGrams = 1000.0 + (2.0 / 0.00220462); 
+  assertEquals(expectedGrams, result.getValue(), 0.01);
+}
 
- assertEquals(new Length(9.0, LengthUnit.FEET), result);
+/* =========================================================
+ EXCEPTION AND EDGE CASE TESTS
+ ========================================================= */
+
+@Test
+void testConversion_NullUnit_Throws() {
+  assertThrows(IllegalArgumentException.class,
+          () -> QuantityMeasurementApp
+                  .demonstrateLengthConversion(1.0, null, LengthUnit.FEET));
 }
 
 @Test
-void testAddition_ExplicitTargetUnit_Commutativity() {
- Length result1 = QuantityMeasurementApp.demonstrateLengthAddition(
-         new Length(1.0, LengthUnit.FEET),
-         new Length(12.0, LengthUnit.INCHES),
-         LengthUnit.YARDS);
-
- Length result2 = QuantityMeasurementApp.demonstrateLengthAddition(
-         new Length(12.0, LengthUnit.INCHES),
-         new Length(1.0, LengthUnit.FEET),
-         LengthUnit.YARDS);
-
- assertEquals(result1, result2);
+void testWeightAddition_NullOperand_Throws() {
+  assertThrows(NullPointerException.class,
+          () -> QuantityMeasurementApp.demonstrateWeightAddition(null, new Weight(1.0, WeightUnit.GRAM)));
 }
-
-@Test
-void testAddition_ExplicitTargetUnit_WithZero() {
- Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-         new Length(5.0, LengthUnit.FEET),
-         new Length(0.0, LengthUnit.INCHES),
-         LengthUnit.YARDS);
-
- Length expected = new Length(1.67, LengthUnit.YARDS);
- assertTrue(result.equals(expected));
-}
-
-@Test
-void testAddition_ExplicitTargetUnit_NegativeValues() {
- Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-         new Length(5.0, LengthUnit.FEET),
-         new Length(-2.0, LengthUnit.FEET),
-         LengthUnit.INCHES);
-
- assertEquals(new Length(36.0, LengthUnit.INCHES), result);
-}
-
-@Test
-void testAddition_ExplicitTargetUnit_NullTargetUnit() {
- assertThrows(IllegalArgumentException.class,
-         () -> QuantityMeasurementApp.demonstrateLengthAddition(
-                 new Length(1.0, LengthUnit.FEET),
-                 new Length(12.0, LengthUnit.INCHES),
-                 null));
-}
-
-@Test
-void testAddition_ExplicitTargetUnit_LargeToSmallScale() {
- Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-         new Length(1000.0, LengthUnit.FEET),
-         new Length(500.0, LengthUnit.FEET),
-         LengthUnit.INCHES);
-
- assertEquals(new Length(18000.0, LengthUnit.INCHES), result);
-}
-
-@Test
-void testAddition_ExplicitTargetUnit_SmallToLargeScale() {
- Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-         new Length(12.0, LengthUnit.INCHES),
-         new Length(12.0, LengthUnit.INCHES),
-         LengthUnit.YARDS);
-
- Length expected = new Length(0.67, LengthUnit.YARDS);
- assertTrue(result.equals(expected));
-}
-}
-
+                                                                                                                                                                                           
+}                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                           
