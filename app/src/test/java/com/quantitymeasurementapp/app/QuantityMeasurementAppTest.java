@@ -1,367 +1,194 @@
+
 package com.quantitymeasurementapp.app;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
+class QuantityMeasurementAppTest {
 
+	@Test
+	void testIMeasurableInterface_LengthUnitImplementation() {
+		IMeasurable unit = LengthUnit.FEET;
+		assertEquals(12.0, unit.getConversionFactor());
+		assertEquals("FEET", unit.getUnitName());
+		assertEquals(12.0, unit.convertToBaseUnit(1.0));
+	}
 
-/**
- * Unit test for simple
- */
-public class QuantityMeasurementAppTest {
+	@Test
+	void testIMeasurableInterface_WeightUnitImplementation() {
+		IMeasurable unit = WeightUnit.KILOGRAM;
+		assertEquals(1000.0, unit.getConversionFactor());
+		assertEquals("KILOGRAM", unit.getUnitName());
+		assertEquals(1000.0, unit.convertToBaseUnit(1.0));
+	}
 
-    
+	@Test
+	void testIMeasurableInterface_ConsistentBehavior() {
+		IMeasurable length = LengthUnit.INCHES;
+		IMeasurable weight = WeightUnit.GRAM;
 
+		assertEquals(1.0, length.getConversionFactor());
+		assertEquals(1.0, weight.getConversionFactor());
+	}
 
-    @Test
-    void testEquality_YardToYard_SameValue() {
-        Length l1 = new Length(1.0, LengthUnit.YARDS);
-        Length l2 = new Length(1.0, LengthUnit.YARDS);
-        assertTrue(l1.equals(l2));
-    }
+	@Test
+	void testGenericQuantity_LengthOperations_Equality() {
+		Quantity<LengthUnit> q1 = new Quantity<>(1.0, LengthUnit.FEET);
+		Quantity<LengthUnit> q2 = new Quantity<>(12.0, LengthUnit.INCHES);
+		assertTrue(q1.equals(q2));
+	}
 
-    @Test
-    void testEquality_YardToYard_DifferentValue() {
-        Length l1 = new Length(1.0, LengthUnit.YARDS);
-        Length l2 = new Length(2.0, LengthUnit.YARDS);
-        assertFalse(l1.equals(l2));
-    }
+	@Test
+	void testGenericQuantity_WeightOperations_Equality() {
+		Quantity<WeightUnit> q1 = new Quantity<>(1.0, WeightUnit.KILOGRAM);
+		Quantity<WeightUnit> q2 = new Quantity<>(1000.0, WeightUnit.GRAM);
+		assertTrue(q1.equals(q2));
+	}
 
-    @Test
-    void testEquality_YardToFeet_EquivalentValue() {
-        Length l1 = new Length(1.0, LengthUnit.YARDS);
-        Length l2 = new Length(3.0, LengthUnit.FEET);
-        assertTrue(l1.equals(l2));
-    }
+	@Test
+	void testCrossCategoryPrevention_LengthVsWeight() {
+		Quantity<LengthUnit> length = new Quantity<>(1.0, LengthUnit.FEET);
+		Quantity<WeightUnit> weight = new Quantity<>(1.0, WeightUnit.KILOGRAM);
 
-    @Test
-    void testEquality_FeetToYard_EquivalentValue() {
-        Length l1 = new Length(3.0, LengthUnit.FEET);
-        Length l2 = new Length(1.0, LengthUnit.YARDS);
-        assertTrue(l1.equals(l2));
-    }
+		assertFalse(length.equals(weight));
+	}
 
-    @Test
-    void testEquality_YardToInches_EquivalentValue() {
-        Length l1 = new Length(1.0, LengthUnit.YARDS);
-        Length l2 = new Length(36.0, LengthUnit.INCHES);
-        assertTrue(l1.equals(l2));
-    }
+	@Test
+	void testGenericQuantity_LengthOperations_Conversion() {
+		Quantity<LengthUnit> q = new Quantity<>(1.0, LengthUnit.FEET);
 
-    @Test
-    void testEquality_InchesToYard_EquivalentValue() {
-        Length l1 = new Length(36.0, LengthUnit.INCHES);
-        Length l2 = new Length(1.0, LengthUnit.YARDS);
-        assertTrue(l1.equals(l2));
-    }
+		Quantity<LengthUnit> result = q.convertTo(LengthUnit.INCHES);
 
-    @Test
-    void testEquality_YardToFeet_NonEquivalentValue() {
-        Length l1 = new Length(1.0, LengthUnit.YARDS);
-        Length l2 = new Length(2.0, LengthUnit.FEET);
-        assertFalse(l1.equals(l2));
-    }
+		assertEquals(12.0, result.getValue());
+		assertEquals(LengthUnit.INCHES, result.getUnit());
+	}
 
-    /* =========================================================
-       CENTIMETER TESTS
-       ========================================================= */
+	@Test
+	void testGenericQuantity_WeightOperations_Conversion() {
+		Quantity<WeightUnit> q = new Quantity<>(1.0, WeightUnit.KILOGRAM);
 
-    @Test
-    void testEquality_centimetersToInches_EquivalentValue() {
-        Length l1 = new Length(1.0, LengthUnit.CENTIMETERS);
-        Length l2 = new Length(0.393701, LengthUnit.INCHES);
-        assertTrue(l1.equals(l2));
-    }
+		Quantity<WeightUnit> result = q.convertTo(WeightUnit.GRAM);
+		
+		assertEquals(1000.0, result.getValue());
+		assertEquals(WeightUnit.GRAM, result.getUnit());
+	}
 
-    @Test
-    void testEquality_centimetersToFeet_NonEquivalentValue() {
-        Length l1 = new Length(1.0, LengthUnit.CENTIMETERS);
-        Length l2 = new Length(1.0, LengthUnit.FEET);
-        assertFalse(l1.equals(l2));
-    }
+	@Test
+	void testGenericQuantity_LengthOperations_Addition() {
+		Quantity<LengthUnit> q1 = new Quantity<>(1.0, LengthUnit.FEET);
+		Quantity<LengthUnit> q2 = new Quantity<>(12.0, LengthUnit.INCHES);
 
-    /* =========================================================
-       TRANSITIVE PROPERTY TEST
-       ========================================================= */
+		Quantity<LengthUnit> result = q1.add(q2, LengthUnit.FEET);
 
-    @Test
-    void testEquality_MultiUnit_TransitiveProperty() {
-        Length yard = new Length(1.0, LengthUnit.YARDS);
-        Length feet = new Length(3.0, LengthUnit.FEET);
-        Length inches = new Length(36.0, LengthUnit.INCHES);
+		assertEquals(2.0, result.getValue());
+		assertEquals(LengthUnit.FEET, result.getUnit());
+	}
 
-        assertTrue(yard.equals(feet));
-        assertTrue(feet.equals(inches));
-        assertTrue(yard.equals(inches));
-    }
+	@Test
+	void testGenericQuantity_WeightOperations_Addition() {
+		Quantity<WeightUnit> q1 = new Quantity<>(1.0, WeightUnit.KILOGRAM);
+		Quantity<WeightUnit> q2 = new Quantity<>(1000.0, WeightUnit.GRAM);
 
-    /* =========================================================
-       NULL UNIT TESTS
-       ========================================================= */
+		Quantity<WeightUnit> result = q1.add(q2, WeightUnit.KILOGRAM);
 
-    @Test
-    void testEquality_YardWithNullUnit() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new Length(1.0, null));
-    }
+		assertEquals(2.0, result.getValue());
+		assertEquals(WeightUnit.KILOGRAM, result.getUnit());
+	}
 
-    @Test
-    void testEquality_CentimetersWithNullUnit() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new Length(1.0, null));
-    }
+	@Test
+	void testGenericQuantity_ConstructorValidation_NullUnit() {
+		assertThrows(IllegalArgumentException.class, () -> new Quantity<>(1.0, null));
+	}
 
-    /* =========================================================
-       REFLEXIVE PROPERTY
-       ========================================================= */
+	@Test
+	void testGenericQuantity_ConstructorValidation_InvalidValue() {
+		assertThrows(IllegalArgumentException.class, () -> new Quantity<>(Double.NaN, LengthUnit.FEET));
+	}
 
-    @Test
-    void testEquality_YardSameReference() {
-        Length yard = new Length(1.0, LengthUnit.YARDS);
-        assertTrue(yard.equals(yard));
-    }
+	@Test
+	void testHashCode_GenericQuantity_Consistency() {
+		Quantity<LengthUnit> q1 = new Quantity<>(1.0, LengthUnit.FEET);
+		Quantity<LengthUnit> q2 = new Quantity<>(12.0, LengthUnit.INCHES);
+		assertEquals(q1, q2);
+		assertEquals(q1.hashCode(), q2.hashCode());
+	}
 
-    @Test
-    void testEquality_CentimetersSameReference() {
-        Length cm = new Length(2.0, LengthUnit.CENTIMETERS);
-        assertTrue(cm.equals(cm));
-    }
+	@Test
+	void testEquals_GenericQuantity_ContractPreservation() {
+		Quantity<LengthUnit> a = new Quantity<>(1.0, LengthUnit.FEET);
+		Quantity<LengthUnit> b = new Quantity<>(12.0, LengthUnit.INCHES);
 
-    /* =========================================================
-       NULL COMPARISON TESTS
-       ========================================================= */
+		assertTrue(a.equals(b));
+		assertTrue(b.equals(a));
+	}
 
-    @Test
-    void testEquality_YardNullComparison() {
-        Length yard = new Length(1.0, LengthUnit.YARDS);
-        assertFalse(yard.equals(null));
-    }
+	@Test
+	void testImmutability_GenericQuantity() {
+		Quantity<LengthUnit> q1 = new Quantity<>(1.0, LengthUnit.FEET);
 
-    @Test
-    void testEquality_CentimetersNullComparison() {
-        Length cm = new Length(1.0, LengthUnit.CENTIMETERS);
-        assertFalse(cm.equals(null));
-    }
+		Quantity<LengthUnit> q2 = q1.convertTo(LengthUnit.INCHES);
 
-    /* =========================================================
-       COMPLEX MULTI-UNIT SCENARIO
-       ========================================================= */
+		assertNotSame(q1, q2);
+	}
 
-    @Test
-    void testEquality_AllUnits_ComplexScenario() {
-        Length yards = new Length(2.0, LengthUnit.YARDS);
-        Length feet = new Length(6.0, LengthUnit.FEET);
-        Length inches = new Length(72.0, LengthUnit.INCHES);
+	@Test
+	void testTypeWildcard_FlexibleSignatures() {
+		Quantity<?> q1 = new Quantity<>(1.0, LengthUnit.FEET);
+		Quantity<?> q2 = new Quantity<>(1.0, WeightUnit.KILOGRAM);
 
-        assertTrue(yards.equals(feet));
-        assertTrue(feet.equals(inches));
-        assertTrue(yards.equals(inches));
-    }
-    
-    /* =========================================================
-    UC5: CONVERSION TESTS
-    ========================================================= */
+		assertNotNull(q1);
+		assertNotNull(q2);
+	}
 
- @Test
- void testConversion_FeetToInches() {
-     Length result = QuantityMeasurementApp
-             .demonstrateLengthConversion(1.0, LengthUnit.FEET, LengthUnit.INCHES);
+	enum VolumeUnit implements IMeasurable {
+		LITER(1.0), MILLILITER(0.001);
 
-     assertEquals(new Length(12.0, LengthUnit.INCHES), result);
- }
+		private final double factor;
 
- @Test
- void testConversion_InchesToFeet() {
-     Length result = QuantityMeasurementApp
-             .demonstrateLengthConversion(24.0, LengthUnit.INCHES, LengthUnit.FEET);
+		VolumeUnit(double factor) {
+			this.factor = factor;
+		}
 
-     assertEquals(new Length(2.0, LengthUnit.FEET), result);
- }
+		@Override
+		public double getConversionFactor() {
+			return factor;
+		}
 
- @Test
- void testConversion_YardsToInches() {
-     Length result = QuantityMeasurementApp
-             .demonstrateLengthConversion(1.0, LengthUnit.YARDS, LengthUnit.INCHES);
+		@Override
+		public String getUnitName() {
+			return name();
+		}
+	}
 
-     assertEquals(new Length(36.0, LengthUnit.INCHES), result);
- }
+	@Test
+	void testScalability_NewUnitEnumIntegration() {
+		Quantity<VolumeUnit> v1 = new Quantity<>(1.0, VolumeUnit.LITER);
+		Quantity<VolumeUnit> v2 = new Quantity<>(1000.0, VolumeUnit.MILLILITER);
 
- @Test
- void testConversion_InchesToYards() {
-     Length result = QuantityMeasurementApp
-             .demonstrateLengthConversion(72.0, LengthUnit.INCHES, LengthUnit.YARDS);
+		assertTrue(v1.equals(v2));
+	}
 
-     assertEquals(new Length(2.0, LengthUnit.YARDS), result);
- }
+	@Test
+	void testQuantityMeasurementApp_SimplifiedDemonstration_Equality() {
+		Quantity<LengthUnit> q1 = new Quantity<>(1.0, LengthUnit.FEET);
+		Quantity<LengthUnit> q2 = new Quantity<>(12.0, LengthUnit.INCHES);
 
- @Test
- void testConversion_CentimetersToInches() {
-     Length result = QuantityMeasurementApp
-             .demonstrateLengthConversion(2.54, LengthUnit.CENTIMETERS, LengthUnit.INCHES);
+		assertDoesNotThrow(() -> QuantityMeasurementApp.demonstrateEquality(q1, q2));
+	}
 
-     assertEquals(new Length(1.0, LengthUnit.INCHES), result);
- }
+	@Test
+	void testQuantityMeasurementApp_SimplifiedDemonstration_Conversion() {
+		Quantity<WeightUnit> q = new Quantity<>(1.0, WeightUnit.KILOGRAM);
 
- @Test
- void testConversion_FeetToYards() {
-     Length result = QuantityMeasurementApp
-             .demonstrateLengthConversion(6.0, LengthUnit.FEET, LengthUnit.YARDS);
+		assertDoesNotThrow(() -> QuantityMeasurementApp.demonstrateConversion(q, WeightUnit.GRAM));
+	}
 
-     assertEquals(new Length(2.0, LengthUnit.YARDS), result);
- }
- 
- /* =========================================================
- UC5: Edge Case Tests
- ========================================================= */
- 
- @Test
- void testConversion_ZeroValue() {
-     Length result = QuantityMeasurementApp
-             .demonstrateLengthConversion(0.0, LengthUnit.FEET, LengthUnit.INCHES);
+	@Test
+	void testQuantityMeasurementApp_SimplifiedDemonstration_Addition() {
+		Quantity<WeightUnit> q1 = new Quantity<>(1.0, WeightUnit.KILOGRAM);
+		Quantity<WeightUnit> q2 = new Quantity<>(1000.0, WeightUnit.GRAM);
 
-     assertEquals(new Length(0.0, LengthUnit.INCHES), result);
- }
-
- @Test
- void testConversion_NegativeValue() {
-     Length result = QuantityMeasurementApp
-             .demonstrateLengthConversion(-1.0, LengthUnit.FEET, LengthUnit.INCHES);
-
-     assertEquals(new Length(-12.0, LengthUnit.INCHES), result);
- }
-
- @Test
- void testConversion_SameUnit() {
-     Length result = QuantityMeasurementApp
-             .demonstrateLengthConversion(5.0, LengthUnit.FEET, LengthUnit.FEET);
-
-     assertEquals(new Length(5.0, LengthUnit.FEET), result);
- }
- 
- 
- 
- /* =========================================================
- UC5: Exception Tests
- ========================================================= */
- 
- @Test
- void testConversion_InvalidUnit_Throws() {
-     assertThrows(IllegalArgumentException.class,
-             () -> QuantityMeasurementApp
-                     .demonstrateLengthConversion(1.0, null, LengthUnit.FEET));
- }
-
- @Test
- void testConversion_NaN_Throws() {
-     assertThrows(IllegalArgumentException.class,
-             () -> QuantityMeasurementApp
-                     .demonstrateLengthConversion(Double.NaN, LengthUnit.FEET, LengthUnit.INCHES));
- }
-
- @Test
- void testConversion_Infinite_Throws() {
-     assertThrows(IllegalArgumentException.class,
-             () -> QuantityMeasurementApp
-                     .demonstrateLengthConversion(Double.POSITIVE_INFINITY, LengthUnit.FEET, LengthUnit.INCHES));
- }
- 
- /* =========================================================
- LENGTH EQUALITY TESTS
- ========================================================= */
-
-
-@Test
-void testEquality_CentimetersToInches_EquivalentValue() {
-  Length l1 = new Length(1.0, LengthUnit.CENTIMETERS);
-  Length l2 = new Length(0.393701, LengthUnit.INCHES);
-  assertTrue(l1.equals(l2));
+		assertDoesNotThrow(() -> QuantityMeasurementApp.demonstrateAddition(q1, q2, WeightUnit.KILOGRAM));
+	}
 }
-
-
-
-@Test
-void testAddition_ExplicitTargetUnit_Centimeters() {
-  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-          new Length(1.0, LengthUnit.INCHES),
-          new Length(1.0, LengthUnit.INCHES),
-          LengthUnit.CENTIMETERS);
-  Length expected = new Length(5.08, LengthUnit.CENTIMETERS);
-  assertTrue(result.equals(expected));
-}
-
-/* =========================================================
- WEIGHT EQUALITY TESTS
- ========================================================= */
-
-@Test
-void testWeightEquality_KilogramToGram_EquivalentValue() {
-  Weight w1 = new Weight(1.0, WeightUnit.KILOGRAM);
-  Weight w2 = new Weight(1000.0, WeightUnit.GRAM);
-  assertTrue(w1.equals(w2));
-}
-
-@Test
-void testWeightEquality_KilogramToPound_EquivalentValue() {
-  Weight w1 = new Weight(1.0, WeightUnit.KILOGRAM);
-  Weight w2 = new Weight(2.20462, WeightUnit.POUND);
-  assertTrue(w1.equals(w2));
-}
-
-/* =========================================================
- WEIGHT CONVERSION TESTS
- ========================================================= */
-
-@Test
-void testWeightConversion_KilogramToGram() {
-  Weight result = QuantityMeasurementApp
-          .demonstrateWeightConversion(1.5, WeightUnit.KILOGRAM, WeightUnit.GRAM);
-  assertEquals(new Weight(1500.0, WeightUnit.GRAM), result);
-}
-
-/* =========================================================
- WEIGHT ADDITION TESTS
- ========================================================= */
-
-@Test
-void testWeightAddition_KilogramPlusGram_ImplicitResult() {
-  Weight result = QuantityMeasurementApp.demonstrateWeightAddition(
-          new Weight(1.0, WeightUnit.KILOGRAM),
-          new Weight(500.0, WeightUnit.GRAM));
-  assertEquals(new Weight(1.5, WeightUnit.KILOGRAM), result);
-}
-
-@Test
-void testWeightAddition_ExplicitTargetUnit_Grams() {
-  Weight result = QuantityMeasurementApp.demonstrateWeightAddition(
-          new Weight(1.0, WeightUnit.KILOGRAM),
-          new Weight(2.0, WeightUnit.POUND),
-          WeightUnit.GRAM);
-  
-  // Validation using a delta for floating point precision
-  double expectedGrams = 1000.0 + (2.0 / 0.00220462); 
-  assertEquals(expectedGrams, result.getValue(), 0.01);
-}
-
-/* =========================================================
- EXCEPTION AND EDGE CASE TESTS
- ========================================================= */
-
-@Test
-void testConversion_NullUnit_Throws() {
-  assertThrows(IllegalArgumentException.class,
-          () -> QuantityMeasurementApp
-                  .demonstrateLengthConversion(1.0, null, LengthUnit.FEET));
-}
-
-@Test
-void testWeightAddition_NullOperand_Throws() {
-  assertThrows(NullPointerException.class,
-          () -> QuantityMeasurementApp.demonstrateWeightAddition(null, new Weight(1.0, WeightUnit.GRAM)));
-}
-                                                                                                                                                                                           
-}                                                                                                                                                                                                           
-                                                                                                                                                                                                                                                                           
