@@ -354,5 +354,151 @@ class QuantityMeasurementAppTest {
 	void testVolumeUnit_GallonFactor() {
 	    assertEquals(3.78541, VolumeUnit.GALLON.getConversionFactor());
 	}
-	
+	// === === Subtraction Tests === ===
+
+    @Test
+    void testSubtraction_SameUnit_FeetMinusFeet() {
+        Quantity<LengthUnit> result = new Quantity<>(10.0, LengthUnit.FEET)
+                .subtract(new Quantity<>(5.0, LengthUnit.FEET));
+        assertEquals(5.0, result.getValue());
+        assertEquals(LengthUnit.FEET, result.getUnit());
+    }
+
+    @Test
+    void testSubtraction_SameUnit_LitreMinusLitre() {
+        Quantity<VolumeUnit> result = new Quantity<>(10.0, VolumeUnit.LITRE)
+                .subtract(new Quantity<>(3.0, VolumeUnit.LITRE));
+        assertEquals(7.0, result.getValue());
+    }
+
+    @Test
+    void testSubtraction_CrossUnit_FeetMinusInches() {
+        // 10ft - 6in = 9.5ft
+        Quantity<LengthUnit> result = new Quantity<>(10.0, LengthUnit.FEET)
+                .subtract(new Quantity<>(6.0, LengthUnit.INCHES));
+        assertEquals(9.5, result.getValue());
+    }
+
+    @Test
+    void testSubtraction_CrossUnit_InchesMinusFeet() {
+        // 120in - 5ft = 60in
+        Quantity<LengthUnit> result = new Quantity<>(120.0, LengthUnit.INCHES)
+                .subtract(new Quantity<>(5.0, LengthUnit.FEET));
+        assertEquals(60.0, result.getValue());
+    }
+
+    @Test
+    void testSubtraction_ExplicitTargetUnit_Inches() {
+        // 10ft - 6in target Inches -> 120in - 6in = 114in
+        Quantity<LengthUnit> result = new Quantity<>(10.0, LengthUnit.FEET)
+                .subtract(new Quantity<>(6.0, LengthUnit.INCHES), LengthUnit.INCHES);
+        assertEquals(114.0, result.getValue());
+    }
+
+    @Test
+    void testSubtraction_ResultingInNegative() {
+        Quantity<LengthUnit> result = new Quantity<>(5.0, LengthUnit.FEET)
+                .subtract(new Quantity<>(10.0, LengthUnit.FEET));
+        assertEquals(-5.0, result.getValue());
+    }
+
+    @Test
+    void testSubtraction_ResultingInZero() {
+        Quantity<LengthUnit> result = new Quantity<>(10.0, LengthUnit.FEET)
+                .subtract(new Quantity<>(120.0, LengthUnit.INCHES));
+        assertEquals(0.0, result.getValue());
+    }
+
+    @Test
+    void testSubtraction_WithNegativeValues() {
+        // 5 - (-2) = 7
+        Quantity<LengthUnit> result = new Quantity<>(5.0, LengthUnit.FEET)
+                .subtract(new Quantity<>(-2.0, LengthUnit.FEET));
+        assertEquals(7.0, result.getValue());
+    }
+
+    @Test
+    void testSubtraction_NullOperand() {
+        Quantity<LengthUnit> q = new Quantity<>(10.0, LengthUnit.FEET);
+        assertThrows(IllegalArgumentException.class, () -> q.subtract(null));
+    }
+
+    @Test
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    void testSubtraction_CrossCategory() {
+        Quantity<LengthUnit> length = new Quantity<>(10.0, LengthUnit.FEET);
+        Quantity weight = new Quantity<>(5.0, WeightUnit.KILOGRAM);
+        assertThrows(IllegalArgumentException.class, () -> length.subtract(weight));
+    }
+
+    @Test
+    void testSubtraction_ChainedOperations() {
+        Quantity<LengthUnit> result = new Quantity<>(10.0, LengthUnit.FEET)
+                .subtract(new Quantity<>(2.0, LengthUnit.FEET))
+                .subtract(new Quantity<>(1.0, LengthUnit.FEET));
+        assertEquals(7.0, result.getValue());
+    }
+    
+    
+ // === === Division Tests === ===
+
+    @Test
+    void testDivision_SameUnit_FeetDividedByFeet() {
+        // Division returns a double (dimensionless ratio)
+        double ratio = new Quantity<>(10.0, LengthUnit.FEET)
+                .divide(new Quantity<>(2.0, LengthUnit.FEET));
+        assertEquals(5.0, ratio);
+    }
+
+    @Test
+    void testDivision_CrossUnit_FeetDividedByInches() {
+        // 24in / 2ft = 1.0
+        double ratio = new Quantity<>(24.0, LengthUnit.INCHES)
+                .divide(new Quantity<>(2.0, LengthUnit.FEET));
+        assertEquals(1.0, ratio);
+    }
+
+    @Test
+    void testDivision_ByZero() {
+        Quantity<LengthUnit> q1 = new Quantity<>(10.0, LengthUnit.FEET);
+        Quantity<LengthUnit> q2 = new Quantity<>(0.0, LengthUnit.FEET);
+        assertThrows(ArithmeticException.class, () -> q1.divide(q2));
+    }
+
+    @Test
+    void testDivision_NonCommutative() {
+        Quantity<LengthUnit> a = new Quantity<>(10.0, LengthUnit.FEET);
+        Quantity<LengthUnit> b = new Quantity<>(5.0, LengthUnit.FEET);
+        
+        assertEquals(2.0, a.divide(b));
+        assertEquals(0.5, b.divide(a));
+    }
+
+    @Test
+    void testDivision_WithSmallRatio() {
+        double ratio = new Quantity<>(1.0, WeightUnit.KILOGRAM)
+                .divide(new Quantity<>(1e6, WeightUnit.KILOGRAM));
+        assertEquals(1e-6, ratio, 1e-9);
+    }
+
+    @Test
+    void testSubtractionAndDivision_Integration() {
+        // (10ft - 5ft) / 2.5ft = 2.0
+        Quantity<LengthUnit> sub = new Quantity<>(10.0, LengthUnit.FEET)
+                .subtract(new Quantity<>(5.0, LengthUnit.FEET));
+        double result = sub.divide(new Quantity<>(2.5, LengthUnit.FEET));
+        
+        assertEquals(2.0, result);
+    }
+
+    @Test
+    void testSubtraction_Immutability() {
+        Quantity<LengthUnit> q1 = new Quantity<>(10.0, LengthUnit.FEET);
+        Quantity<LengthUnit> q2 = new Quantity<>(5.0, LengthUnit.FEET);
+        
+        q1.subtract(q2);
+        
+        // Original value should remain 10.0
+        assertEquals(10.0, q1.getValue());
+    }
 }

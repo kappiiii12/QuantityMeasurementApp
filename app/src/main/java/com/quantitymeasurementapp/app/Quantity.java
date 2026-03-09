@@ -58,6 +58,35 @@ public class Quantity<U extends IMeasurable> {
 		
 		return new Quantity<>(round(thisBase), this.unit);
 	}
+	public Quantity<U> subtract(Quantity<U> quantity){
+		if(quantity == null)
+			throw new IllegalArgumentException("Quantity  can not be null");
+		else if(!sameDomain(this.unit, quantity.unit)) 
+			throw new IllegalArgumentException("Quantity's are not of same domain.");
+		double value = (this.toBase() - quantity.toBase())/this.unit.getConversionFactor();
+		
+		return new Quantity<>(round(value),this.unit);
+	}
+	public double divide(Quantity<U> quantity) {
+	    // 1. Null Check
+	    if (quantity == null) {
+	        throw new IllegalArgumentException("Target quantity cannot be null.");
+	    }
+
+	    // 2. Division by Zero Check
+	    if (quantity.getValue() == 0) {
+	        throw new ArithmeticException("Division by zero is not allowed.");
+	    }
+
+	    // 3. Domain/Category Check (Assuming sameDomain is your helper method)
+	    if (!sameDomain(this.unit, quantity.unit)) {
+	        throw new IllegalArgumentException("Quantities are not from the same measurement domain.");
+	    }
+
+	    // 4. Calculation: (Value1 * Factor1) / (Value2 * Factor2)
+	    // This provides the absolute ratio between the two measurements.
+	    return this.toBase() / quantity.toBase();
+	}
 	
 	private boolean sameDomain(U unit1, U unit2) {
 		return unit1.getClass() == unit2.getClass();
@@ -72,6 +101,12 @@ public class Quantity<U extends IMeasurable> {
 			throw new IllegalArgumentException("Quantity and Targetunit can not be null");
 		}
 		return this.add(thatQuantity).convertTo(targetUnit);
+	}
+	public Quantity<U> subtract(Quantity<U> thatQuantity, U targetUnit){
+		if(thatQuantity == null || unit == null) {
+			throw new IllegalArgumentException("Quantity and Targetunit can not be null");
+		}
+		return this.subtract(thatQuantity).convertTo(targetUnit);
 	}
 	
 	@Override
