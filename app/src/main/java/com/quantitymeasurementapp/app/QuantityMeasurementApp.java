@@ -57,15 +57,31 @@ public class QuantityMeasurementApp {
         demonstrateDivision(new Quantity<>(24.0, LengthUnit.INCHES), new Quantity<>(2.0, LengthUnit.FEET));
         demonstrateDivision(new Quantity<>(2000.0, WeightUnit.GRAM), new Quantity<>(1.0, WeightUnit.KILOGRAM));
 
-        // --- Error Cases ---
-//        System.out.println("\n### Error Cases ###");
-//        handleError(() -> demonstrateSubtraction(new Quantity<>(10.0, LengthUnit.FEET), null), "Subtracting Null");
-//        handleError(() -> demonstrateDivision(new Quantity<>(10.0, LengthUnit.FEET), new Quantity<>(0.0, LengthUnit.FEET)), "Division by Zero");
-//        
-//        // Note: Cross-category subtraction usually fails at compile-time if your 
-//        // demonstrateSubtraction method uses strict generics (e.g., <T extends Enum<T> & Unit>)
-//        handleError(() -> demonstrateSubtraction(new Quantity<>(10.0, LengthUnit.FEET), new Quantity<>(5.0, WeightUnit.KILOGRAM)), "Cross-Category Subtraction");
-      
+         System.out.println("\n=== Temperature Demonstration ===");
+
+      //Equality Demonstration
+      Quantity<TemperatureUnit> temp1 = new Quantity<>(0.0,
+         TemperatureUnit.CELSIUS);
+      Quantity<TemperatureUnit> temp2 = new Quantity<>(32.0,
+         TemperatureUnit.FAHRENHEIT);
+      System.out.println("0°C equals 32°F: " + temp1.equals(temp2));
+
+      //Conversion Demonstration
+      Quantity<TemperatureUnit> celsius = new Quantity<>(100.0,
+         TemperatureUnit.CELSIUS);
+
+      Quantity<TemperatureUnit> fahrenheit = celsius.convertTo(
+         TemperatureUnit.FAHRENHEIT);
+      System.out.println("100°C = " + fahrenheit.getValue() + "°F");
+
+      //Unsupported Operation Demonstration
+      try {
+         celsius.add(new Quantity<>(50.0, TemperatureUnit.CELSIUS));
+      } catch (UnsupportedOperationException e) {
+         System.out.println("Cannot add absolute temperatures: " +
+             e.getMessage());
+      }
+      	
 
 	}
 }
