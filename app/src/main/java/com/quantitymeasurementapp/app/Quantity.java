@@ -1,8 +1,34 @@
 package com.quantitymeasurementapp.app;
 
 import java.util.Objects;
+import java.util.function.DoubleBinaryOperator;
 
 public class Quantity<U extends IMeasurable> {
+	
+	private enum ArithmeticOperation{
+		ADD((a,b) -> a+b),
+		SUBTRACT((a,b) -> a-b),
+		DIVIDE((a,b) ->{
+			if(Math.abs(b) < EPSILON) {
+				throw new ArithmeticException("Divisor can't be 0.");
+			}
+			return a/b;
+		});
+      private final DoubleBinaryOperator operation;
+		ArithmeticOperation(DoubleBinaryOperator operation) {
+			// TODO Auto-generated constructor stub
+			this.operation = operation;
+			
+		}
+		
+		public double compute(double a, double b) {
+			return operation.applyAsDouble(a, b);
+		}
+	}
+	
+	
+	
+	
   private final double value;
   private final U unit;
   
@@ -21,7 +47,7 @@ public class Quantity<U extends IMeasurable> {
 		return unit.convertToBaseUnit(value);
 	}
 	
-	public double getValue() {
+  public double getValue() {
 	return value;
 }
   public U getUnit() {
@@ -31,8 +57,17 @@ public class Quantity<U extends IMeasurable> {
 	return EPSILON;
   }
 
-	private static final double EPSILON = 1e-9;
-	
+  private static final double EPSILON = 1e-9;
+    private Quantity<U> operate(Quantity<U> that, ArithmeticOperation op) {
+      if (that == null) {
+          throw new IllegalArgumentException("Quantity cannot be null");
+      }
+
+      double resultBase = op.compute(this.toBase(), that.toBase());
+      double result = resultBase / this.unit.getConversionFactor();
+
+      return new Quantity<>(round(result), this.unit);
+  }
 	public Quantity<U> convertTo(U targetUnit){
 		if(targetUnit == null) {
 			throw new IllegalArgumentException("Target unit cannot be null");
@@ -53,19 +88,14 @@ public class Quantity<U extends IMeasurable> {
 		}else if(!sameDomain(this.unit, thatQuantity.unit)) {
 			throw new IllegalArgumentException("Quantity's are not of same domain.");
 		}
-		
-		double thisBase = (toBase() + thatQuantity.toBase())/this.unit.getConversionFactor();
-		
-		return new Quantity<>(round(thisBase), this.unit);
+		return this.operate(thatQuantity, ArithmeticOperation.ADD);
 	}
 	public Quantity<U> subtract(Quantity<U> quantity){
 		if(quantity == null)
 			throw new IllegalArgumentException("Quantity  can not be null");
 		else if(!sameDomain(this.unit, quantity.unit)) 
 			throw new IllegalArgumentException("Quantity's are not of same domain.");
-		double value = (this.toBase() - quantity.toBase())/this.unit.getConversionFactor();
-		
-		return new Quantity<>(round(value),this.unit);
+		return this.operate(quantity, ArithmeticOperation.SUBTRACT);
 	}
 	public double divide(Quantity<U> quantity) {
 	    // 1. Null Check
@@ -85,7 +115,7 @@ public class Quantity<U extends IMeasurable> {
 
 	    // 4. Calculation: (Value1 * Factor1) / (Value2 * Factor2)
 	    // This provides the absolute ratio between the two measurements.
-	    return this.toBase() / quantity.toBase();
+	    return round(ArithmeticOperation.DIVIDE.compute(this.toBase(), quantity.toBase()));
 	}
 	
 	private boolean sameDomain(U unit1, U unit2) {
