@@ -1,6 +1,8 @@
-package com.quantitymeasurementapp.app;
+package com.quantitymeasurementapp.app.service;
 
 import java.util.function.Function;
+
+import com.quantitymeasurementapp.app.entity.IMeasurable;
 
 public enum TemperatureUnit implements IMeasurable {
 	CELSIUS(false),

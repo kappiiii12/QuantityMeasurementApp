@@ -4,6 +4,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import com.quantitymeasurementapp.app.entity.IMeasurable;
+import com.quantitymeasurementapp.app.entity.Quantity;
+import com.quantitymeasurementapp.app.service.LengthUnit;
+import com.quantitymeasurementapp.app.service.TemperatureUnit;
+import com.quantitymeasurementapp.app.service.VolumeUnit;
+import com.quantitymeasurementapp.app.service.WeightUnit;
+
 class QuantityMeasurementAppTest {
 
 	@Test

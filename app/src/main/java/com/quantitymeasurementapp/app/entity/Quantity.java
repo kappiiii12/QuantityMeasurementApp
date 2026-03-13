@@ -1,9 +1,20 @@
-package com.quantitymeasurementapp.app;
+package com.quantitymeasurementapp.app.entity;
 
 import java.util.Objects;
 import java.util.function.DoubleBinaryOperator;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+@Entity
+@Table(name = "measurements")
 public class Quantity<U extends IMeasurable> {
+	
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 	
 	private enum ArithmeticOperation{
 		ADD((a,b) -> a+b),

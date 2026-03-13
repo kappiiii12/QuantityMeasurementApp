@@ -1,5 +1,12 @@
 package com.quantitymeasurementapp.app;
 
+import com.quantitymeasurementapp.app.entity.IMeasurable;
+import com.quantitymeasurementapp.app.entity.Quantity;
+import com.quantitymeasurementapp.app.service.LengthUnit;
+import com.quantitymeasurementapp.app.service.TemperatureUnit;
+import com.quantitymeasurementapp.app.service.VolumeUnit;
+import com.quantitymeasurementapp.app.service.WeightUnit;
+
 public class QuantityMeasurementApp {
 
 	public static <U extends IMeasurable> void demonstrateEquality(Quantity<U> q1, Quantity<U> q2) {

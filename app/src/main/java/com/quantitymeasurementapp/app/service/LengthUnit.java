@@ -1,4 +1,6 @@
-package com.quantitymeasurementapp.app;
+package com.quantitymeasurementapp.app.service;
+
+import com.quantitymeasurementapp.app.entity.IMeasurable;
 
 public enum LengthUnit implements IMeasurable {
 	FEET(12),

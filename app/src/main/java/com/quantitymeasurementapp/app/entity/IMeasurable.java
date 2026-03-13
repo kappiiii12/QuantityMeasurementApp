@@ -1,4 +1,6 @@
-package com.quantitymeasurementapp.app;
+package com.quantitymeasurementapp.app.entity;
+
+import com.quantitymeasurementapp.app.service.SupportsArithmetic;
 
 public interface IMeasurable {
 	
