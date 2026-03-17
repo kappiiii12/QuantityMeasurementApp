@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 @Entity
 @Table(name = "measurements")
 public class Quantity<U extends IMeasurable> {
@@ -38,22 +39,24 @@ public class Quantity<U extends IMeasurable> {
 	}
 	
 	
+	private String unitName;
 	
-	
-  private final double value;
-  private final U unit;
+  private  double value;
+  @Transient
+  private  U unit;
   
+  protected Quantity() {}
+
   public Quantity(double value, U unit) {
-	  if (unit == null) {
-          throw new IllegalArgumentException("Unit cannot be null.");
-      }
-    	  if(!Double.isFinite(value)) {
-      	throw new IllegalArgumentException("value cannot be Infinite.");
-      }
-	
-	this.value = value;
-	this.unit = unit;
+      if (unit == null) throw new IllegalArgumentException("Unit cannot be null.");
+      this.value = value;
+      this.unit = unit;
+      this.unitName = unit.getUnitName();
   }
+  public Long getId() { return id; }
+  public void setId(Long id) { this.id = id; }
+  public String getUnitName() { return unitName; }
+  public void setUnitName(String unitName) { this.unitName = unitName; }
   private double toBase() {
 		return unit.convertToBaseUnit(value);
 	}
